@@ -17,7 +17,6 @@ char * TDAddress = "tcp://180.168.146.181:10000";
 int main(int argc, char* argv[])
 {
 	string path;
-	//读取参数
 	for (int i = 0; i < argc; i++)
 	{
 		cout << argv[i] << endl;
@@ -32,7 +31,7 @@ int main(int argc, char* argv[])
 			}			
 		}
 	}
-	//若参数无效
+	path=".\\Contracts\\";
 	if (path.size()<1)
 	{
 		//参数有误,退出程序
@@ -40,21 +39,21 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+		//-1
 		MyMdSpi *mdSpi = NULL;
 		CThostFtdcMdApi *mdApi = CThostFtdcMdApi::CreateFtdcMdApi(".\\MdTmp\\");
 		mdApi->RegisterSpi(mdSpi= new MyMdSpi(mdApi));
 		mdApi->RegisterFront(MDAddress);
 
+		//-2
 		MyTdSpi *tdSpi = NULL;
 		CThostFtdcTraderApi *tdApi=CThostFtdcTraderApi::CreateFtdcTraderApi(".\\TdTmp\\");
-		tdApi->RegisterSpi(tdSpi=new MyTdSpi(tdApi));
+		tdApi->RegisterSpi(tdSpi=new MyTdSpi(tdApi,mdApi,mdSpi));
 		tdApi->SubscribePublicTopic(THOST_TERT_RESTART);
 		tdApi->SubscribePrivateTopic(THOST_TERT_QUICK);
 		tdApi->RegisterFront(TDAddress);
 
-
-
-		mdApi->Init();
+		tdApi->Init();
 		tdApi->Join();
 	}
 

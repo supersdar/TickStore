@@ -46,7 +46,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F8257AF9-E57C-4B40-B710-33277AC55074}</ProjectGuid>
     <RootNamespace>TickStore</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

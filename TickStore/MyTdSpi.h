@@ -17,10 +17,7 @@ extern char * TDAddress;
 class MyTdSpi :	public CThostFtdcTraderSpi
 {
 public:
-	MyTdSpi(CThostFtdcTraderApi* pTdApi)
-	{
-		this->m_pTdApi = pTdApi;
-	};
+	MyTdSpi(CThostFtdcTraderApi* tdApi,CThostFtdcMdApi *mdApi,CThostFtdcMdSpi *mdSpi);;
 	~MyTdSpi();
 
 	virtual void OnFrontConnected() ;
@@ -29,13 +26,23 @@ public:
 
 	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) ;
 
+	void ReqSettlementInfoConfirm();
+
 	virtual void OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) ;
 
 	virtual void OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) ;
 
+	virtual void OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+	
+	void ReqQryOrder();
+
+	virtual void OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
 	//virtual void OnRspQryDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) ;
 
 private:
-	CThostFtdcTraderApi *m_pTdApi;
+	CThostFtdcTraderApi *tdApi;
+	CThostFtdcMdApi *mdApi;
+	CThostFtdcMdSpi *mdSpi;
 };
 
