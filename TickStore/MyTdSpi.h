@@ -16,8 +16,13 @@ extern char * TDAddress;
 
 class MyTdSpi :	public CThostFtdcTraderSpi
 {
+private:
+	CThostFtdcTraderApi *tdApi;
+	CThostFtdcMdApi *mdApi;
+	CThostFtdcMdSpi *mdSpi;
+	
 public:
-	MyTdSpi(CThostFtdcTraderApi* tdApi,CThostFtdcMdApi *mdApi,CThostFtdcMdSpi *mdSpi);;
+	MyTdSpi(CThostFtdcTraderApi* tdApi,CThostFtdcMdApi *mdApi,CThostFtdcMdSpi *mdSpi);
 	~MyTdSpi();
 
 	virtual void OnFrontConnected() ;
@@ -38,11 +43,12 @@ public:
 
 	virtual void OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
+	void QryAllInstrument();
+
+	virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
 	//virtual void OnRspQryDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) ;
 
-private:
-	CThostFtdcTraderApi *tdApi;
-	CThostFtdcMdApi *mdApi;
-	CThostFtdcMdSpi *mdSpi;
+
 };
 
