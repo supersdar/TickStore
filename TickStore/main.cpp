@@ -4,6 +4,8 @@
 #include "ThostFtdcTraderApi.h"
 #include "MyTdSpi.h"
 
+#include <windows.h>
+
 using namespace std;
 
 int requestId=0;
@@ -11,8 +13,8 @@ string md_Instrument_all;
 char * brokerID = "0081";
 char * userId = "00476";
 char * passwd = "123456";
-char * MDAddress = "tcp://180.168.146.181:10100";
-char * TDAddress = "tcp://180.168.146.181:10000";
+char * MDAddress = "tcp://180.168.146.187:10000";
+char * TDAddress = "tcp://180.168.146.187:10010";
 
 int main(int argc, char* argv[])
 {
@@ -39,13 +41,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		//-1
+		//-1:实例化行情订阅
 		MyMdSpi *mdSpi = NULL;
 		CThostFtdcMdApi *mdApi = CThostFtdcMdApi::CreateFtdcMdApi(".\\MdTmp\\");
 		mdApi->RegisterSpi(mdSpi= new MyMdSpi(mdApi));
 		mdApi->RegisterFront(MDAddress);
 
-		//-2
+		//-2:实例化交易对象
 		MyTdSpi *tdSpi = NULL;
 		CThostFtdcTraderApi *tdApi=CThostFtdcTraderApi::CreateFtdcTraderApi(".\\TdTmp\\");
 		tdApi->RegisterSpi(tdSpi=new MyTdSpi(tdApi,mdApi,mdSpi));
