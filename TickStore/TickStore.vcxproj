@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyMdSpi.cpp" />
+    <ClCompile Include="MyTdSpi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="error.dtd" />
@@ -34,6 +36,8 @@
     <Xml Include="error.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MyMdSpi.h" />
+    <ClInclude Include="MyTdSpi.h" />
     <ClInclude Include="ThostFtdcMdApi.h" />
     <ClInclude Include="ThostFtdcTraderApi.h" />
     <ClInclude Include="ThostFtdcUserApiDataType.h" />

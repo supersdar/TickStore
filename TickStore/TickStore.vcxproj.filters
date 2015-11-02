@@ -18,6 +18,12 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MyMdSpi.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyTdSpi.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="thostmduserapi.dll">
@@ -55,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="ThostFtdcUserApiStruct.h">
       <Filter>资源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyMdSpi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTdSpi.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
