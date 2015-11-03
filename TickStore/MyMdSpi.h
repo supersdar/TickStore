@@ -65,7 +65,7 @@ public:
 	
 	void SubscribeMarketData();
 
-	void GetWriter(TThostFtdcInstrumentIDType	InstrumentID, TThostFtdcPriceType	LastPrice, TThostFtdcTimeType	UpdateTime);
+	void GetWriter(CThostFtdcDepthMarketDataField *pDepthMarketData);
 
 	~MyMdSpi();
 	//void ClearRepositoryMap();

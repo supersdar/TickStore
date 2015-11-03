@@ -62,7 +62,7 @@ void MyTdSpi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *p
 	//-6:等待最后一笔结算单回应
 	if (pRspInfo->ErrorID==0)
 	{
-		Sleep(3000);
+		//Sleep(3000);
 		cout << "结算确认完成" << endl;
 		//-7:
 		ReqQryOrder();
@@ -98,7 +98,7 @@ void MyTdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 {
 	bool ret = ((pRspInfo) && (pRspInfo->ErrorID != 0));
 	if (ret) {
-		cerr << " 错误反馈 ：" << pRspInfo->ErrorMsg << endl;
+		cerr << "错误反馈 :" << pRspInfo->ErrorMsg << endl;
 	}
 }
 

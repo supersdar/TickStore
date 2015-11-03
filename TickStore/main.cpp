@@ -10,6 +10,7 @@ using namespace std;
 
 int requestId=0;
 string md_Instrument_all;
+string path;
 char * brokerID = "9999";
 char * userId = "039198";
 char * passwd = "123456";
@@ -18,7 +19,6 @@ char * TDAddress = "tcp://180.168.146.187:10000";
 
 int main(int argc, char* argv[])
 {
-	string path;
 	for (int i = 0; i < argc; i++)
 	{
 		cout << argv[i] << endl;
@@ -33,7 +33,10 @@ int main(int argc, char* argv[])
 			}			
 		}
 	}
-	path=".\\Contracts\\";
+	if (path.size()<1)
+	{
+		path = ".\\Contracts\\";
+	}
 	if (path.size()<1)
 	{
 		//参数有误,退出程序

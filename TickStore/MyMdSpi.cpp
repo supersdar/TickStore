@@ -5,6 +5,8 @@
 #include<time.h>
 #include<windows.h>
 
+extern string path;
+
 using namespace std;
 
 void MyMdSpi::ReqUserLogin(TThostFtdcBrokerIDType appId, TThostFtdcUserIDType userId, TThostFtdcPasswordType passwd)
@@ -73,7 +75,7 @@ void MyMdSpi::SubscribeMarketData()
 	char *token = strtok(tmp, ",");
 	while (token != NULL) {
 		list.push_back(token);
-		cout << token << endl;
+		//cout << token << endl;
 		token = strtok(NULL, ",");
 	}
 	size_t len = list.size();
@@ -81,10 +83,9 @@ void MyMdSpi::SubscribeMarketData()
 	for (int i = 0; i < len; i++)  
 		pId[i] = list[i];
 
-	/*int ret = this->mdApi->SubscribeMarketData(pId, len);
+	int ret = this->mdApi->SubscribeMarketData(pId, len);
 	
-	cout<< " 请求订阅合约" << ((ret == 0) ? "成功" : "失败") << endl;*/
-
+	cout<< " REQ订阅合约" << ((ret == 0) ? "成功" : "失败") << endl;
 }
 
 void MyMdSpi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -103,37 +104,48 @@ void MyMdSpi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecific
 }
 
 string MyMdSpi::GetSystemDate() {
-	char date[9] = { 0 };
+	char date[50] = { 0 };
 	time_t timer;
 	time(&timer);
 	tm* t_tm = localtime(&timer);
-	sprintf(date, "%d%02d%02d%s", t_tm->tm_year + 1900, t_tm->tm_mon, t_tm->tm_mday,".dat");
+	sprintf(date, "%s%d%02d%02d%s", path.c_str(), t_tm->tm_year + 1900, t_tm->tm_mon, t_tm->tm_mday, ".dat");
+	
 	return string(date);
 }
-void  MyMdSpi::GetWriter(TThostFtdcInstrumentIDType	InstrumentID, double LastPrice, TThostFtdcTimeType	UpdateTime) {
-	if (fp==NULL)
-	{
-		fp = fopen((char *)GetSystemDate().c_str(), "ab");
-	}
-	 
-	fwrite(InstrumentID, sizeof(InstrumentID), sizeof(InstrumentID), fp);
-	//fwrite(LastPrice, sizeof(double), sizeof(double), fp);
-	fwrite(UpdateTime, sizeof(UpdateTime), sizeof(UpdateTime), fp);
-	fwrite("\r\n", 1, 2, fp);
-}
+
 void MyMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
-	//if(strcmp(pDepthMarketData->InstrumentID, m_instId) == 0)
+	//-15：存储tick数据
+	GetWriter(pDepthMarketData);
+}
 
+void  MyMdSpi::GetWriter(CThostFtdcDepthMarketDataField *pDepthMarketData) {
+	if (fp == NULL)
+	{
+		fp = fopen((char *)GetSystemDate().c_str(), "ab");
+		cout << "存储路径：" << GetSystemDate().c_str() << endl;
+
+		if (fp)
+		{
+			cout << "存储文件创建成功：" << GetSystemDate().c_str() << endl;
+		}		
+	}
+	if (fwrite(pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField), 1, fp) != 1)
+	{
+		cout << "写入错误" << endl;
+	}
+	cout << "成功写入一笔划tick" << endl;
 	
-	string date = pDepthMarketData->InstrumentID;
-	//	LastPrice
-
-
+	
 }
 
 MyMdSpi::~MyMdSpi()
 {
+	//-16：关闭文件
+	if (fp!=NULL)
+	{
+		fclose(fp);
+	}
 }
 
 //void MyMdSpi::ClearRepositoryMap()
