@@ -10,11 +10,11 @@ using namespace std;
 
 int requestId=0;
 string md_Instrument_all;
-char * brokerID = "0081";
-char * userId = "00476";
+char * brokerID = "9999";
+char * userId = "039198";
 char * passwd = "123456";
-char * MDAddress = "tcp://180.168.146.187:10000";
-char * TDAddress = "tcp://180.168.146.187:10010";
+char * MDAddress = "tcp://180.168.146.187:10010";
+char * TDAddress = "tcp://180.168.146.187:10000";
 
 int main(int argc, char* argv[])
 {
