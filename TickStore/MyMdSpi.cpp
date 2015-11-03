@@ -50,7 +50,7 @@ void MyMdSpi::OnFrontConnected()
 
 void MyMdSpi::OnFrontDisconnected(int nReason)
 {
-
+	
 }
 
 void MyMdSpi::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -68,7 +68,7 @@ void MyMdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 //-14:订阅行情
 void MyMdSpi::SubscribeMarketData()
 {	
-
+	//使用","分解合约
 	char * tmp = (char *)md_Instrument_all.c_str();
 	vector<char*> list;
 	char *token = strtok(tmp, ",");
@@ -78,13 +78,14 @@ void MyMdSpi::SubscribeMarketData()
 		token = strtok(NULL, ",");
 	}
 	size_t len = list.size();
+	//合成合约订阅指针
 	char** pId = new char*[len];
 	for (int i = 0; i < len; i++)  
 		pId[i] = list[i];
 
 	int ret = this->mdApi->SubscribeMarketData(pId, len);
 	
-	cout<< " REQ订阅合约" << ((ret == 0) ? "成功" : "失败") << endl;
+	cout<< " 订阅合约" << ((ret == 0) ? "成功" : "失败") << endl;
 }
 
 void MyMdSpi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -102,11 +103,13 @@ void MyMdSpi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecific
 
 }
 
-string MyMdSpi::GetSystemDate() {
+string MyMdSpi::GetSavePath() {
 	char date[50] = { 0 };
+	//获取系统时间
 	time_t timer;
 	time(&timer);
 	tm* t_tm = localtime(&timer);
+	//格式化系统时间，并拼接得到存储路径
 	sprintf(date, "%s%d%02d%02d%s", path.c_str(), t_tm->tm_year + 1900, t_tm->tm_mon, t_tm->tm_mday, ".dat");
 	
 	return string(date);
@@ -117,16 +120,17 @@ void MyMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketD
 	//-15：存储tick数据
 	GetWriter(pDepthMarketData);
 }
-
+//Tick的写入方法
 void  MyMdSpi::GetWriter(CThostFtdcDepthMarketDataField *pDepthMarketData) {
+	//对首次写入文件前初始化文件指针
 	if (fp == NULL)
 	{
-		fp = fopen((char *)GetSystemDate().c_str(), "ab");
-		cout << "存储路径：" << GetSystemDate().c_str() << endl;
+		fp = fopen((char *)GetSavePath().c_str(), "ab");
+		cout << "存储路径：" << GetSavePath().c_str() << endl;
 
 		if (fp)
 		{
-			cout << "存储文件创建成功：" << GetSystemDate().c_str() << endl;
+			cout << "存储文件创建成功：" << GetSavePath().c_str() << endl;
 		}		
 	}
 	if (fwrite(pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField), 1, fp) != 1)
@@ -140,7 +144,7 @@ void  MyMdSpi::GetWriter(CThostFtdcDepthMarketDataField *pDepthMarketData) {
 
 MyMdSpi::~MyMdSpi()
 {
-	//-16：关闭文件
+	//-16：退出程序前，关闭文件
 	if (fp!=NULL)
 	{
 		fclose(fp);

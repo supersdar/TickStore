@@ -7,6 +7,7 @@
 
 MyTdSpi::MyTdSpi(CThostFtdcTraderApi* tdApi, CThostFtdcMdApi *mdApi, CThostFtdcMdSpi *mdSpi)
 {
+	//在内部对交易实例进行引用，便于回掉
 	this->tdApi = tdApi;
 	this->mdApi = mdApi;
 	this->mdSpi = mdSpi;
@@ -20,7 +21,8 @@ MyTdSpi::~MyTdSpi()
 void MyTdSpi::OnFrontConnected()
 {
 	//-3:与交易服务器建立连接
-	cerr << "Trader与交易服务器握手成功" << endl;
+
+	cerr << "与交易服务器握手成功" << endl;
 	CThostFtdcReqUserLoginField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.BrokerID, brokerID);
@@ -34,25 +36,26 @@ void MyTdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostF
 	//-4:等待登陆结果
 	if (pRspInfo->ErrorID==0)
 	{
-		cout << "Trader 登录成功" << endl;
+		cout << "交易端成功登录" << endl;
 		//-5:结算单确认	
 		ReqSettlementInfoConfirm();	
 		QryAllInstrument();
 	}
 	else
 	{
-		cout << "Trader 登录失败"<<pRspInfo->ErrorMsg << endl;
+		cout << "交易端登录失败"<<pRspInfo->ErrorMsg << endl;
 	}
 }
 void MyTdSpi::ReqSettlementInfoConfirm()
 {
 	//-5:结算单确认
+
 	CThostFtdcSettlementInfoConfirmField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.BrokerID, brokerID);
 	strcpy(req.InvestorID, userId);
 	int ret = this->tdApi->ReqSettlementInfoConfirm(&req, ++requestId);	
-	cerr << " REQ | 发送结算单确认..." << ((ret == 0) ? "成功" : "失败") << endl;
+	cerr << "发送结算单确认..." << ((ret == 0) ? "成功" : "失败") << endl;
 	
 }
 void MyTdSpi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -62,9 +65,8 @@ void MyTdSpi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *p
 	//-6:等待最后一笔结算单回应
 	if (pRspInfo->ErrorID==0)
 	{
-		//Sleep(3000);
 		cout << "结算确认完成" << endl;
-		//-7:
+		//-7:查询报单
 		ReqQryOrder();
 		
 	}
@@ -81,15 +83,15 @@ void MyTdSpi::ReqQryOrder()
 
 void MyTdSpi::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	
+	//在最后一笔报单后
 	if (bIsLast)
 	{
-		//-8:查询所有合约,查询所有合约
+		//-8:查询所有合约
 		QryAllInstrument();		
 	}
 }
 void MyTdSpi::QryAllInstrument() {
-	//-9:查询所有合约
+	//-10:查询所有合约
 	CThostFtdcQryInstrumentField req;
 	memset(&req, 0, sizeof(req));
 	this->tdApi->ReqQryInstrument(&req, ++requestId);//-9	
@@ -105,12 +107,13 @@ void MyTdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 void MyTdSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 
-	//-10：接收合约
+	//-11：接收合约信息并依此append到全局合约信息变量中
 	md_Instrument_all = md_Instrument_all + pInstrument->InstrumentID + ",";
 	if (bIsLast)
 	{
 		md_Instrument_all = md_Instrument_all.substr(0, md_Instrument_all.length() - 1);
 		//cout << md_Instrument_all << endl;
+		//-12：启动行情端
 		this->mdApi->Init();
 	}
 }
