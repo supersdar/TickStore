@@ -18,10 +18,12 @@ void MyMdSpi::ReqUserLogin(TThostFtdcBrokerIDType appId, TThostFtdcUserIDType us
 }
 void MyMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	//检测登录情况
+	//-13:检测登录情况
 	if (pRspInfo->ErrorID==0)
 	{
 		cout << "登录成功"<< endl;
+		//-14:订阅行情
+		SubscribeMarketData();
 	}
 	else
 	{
@@ -32,8 +34,16 @@ void MyMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostF
 
 void MyMdSpi::OnFrontConnected()
 {
-	
-	cout << "与服务器握手成功" << endl;
+	//-11:与行情服务器握手成功
+	cout << "与行情服务器握手成功" << endl;
+
+	//-12:请求登陆
+	CThostFtdcReqUserLoginField req;
+	memset(&req, 0, sizeof(req));
+	strcpy(req.BrokerID, brokerID);
+	strcpy(req.UserID, userId);
+	strcpy(req.Password, passwd);
+	int ret =this->mdApi->ReqUserLogin(&req, ++requestId);
 }
 
 void MyMdSpi::OnFrontDisconnected(int nReason)
@@ -53,17 +63,17 @@ void MyMdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 		cerr << " 错误反馈 :" << pRspInfo->ErrorMsg << endl;
 	}
 }
-
+//-14:订阅行情
 void MyMdSpi::SubscribeMarketData()
 {
-	//清空
-	//ClearRepositoryMap();	
+	
 
 	char * tmp = (char *)md_Instrument_all.c_str();
 	vector<char*> list;
 	char *token = strtok(tmp, ",");
 	while (token != NULL) {
 		list.push_back(token);
+		cout << token << endl;
 		token = strtok(NULL, ",");
 	}
 	size_t len = list.size();
@@ -71,9 +81,9 @@ void MyMdSpi::SubscribeMarketData()
 	for (int i = 0; i < len; i++)  
 		pId[i] = list[i];
 
-	int ret = this->mdApi->SubscribeMarketData(pId, len);
+	/*int ret = this->mdApi->SubscribeMarketData(pId, len);
 	
-	cout<< " 请求订阅合约" << ((ret == 0) ? "成功" : "失败") << endl;
+	cout<< " 请求订阅合约" << ((ret == 0) ? "成功" : "失败") << endl;*/
 
 }
 

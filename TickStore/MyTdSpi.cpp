@@ -57,7 +57,7 @@ void MyTdSpi::ReqSettlementInfoConfirm()
 }
 void MyTdSpi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {	
-	std::cerr << "--->>> " << __FUNCTION__ << std::endl;
+	//std::cerr << "--->>> " << __FUNCTION__ << std::endl;
 
 	//-6:等待最后一笔结算单回应
 	if (pRspInfo->ErrorID==0)
@@ -85,12 +85,11 @@ void MyTdSpi::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField
 	if (bIsLast)
 	{
 		//-8:查询所有合约,查询所有合约
-		QryAllInstrument();
-		
+		QryAllInstrument();		
 	}
 }
 void MyTdSpi::QryAllInstrument() {
-	//查询所有合约
+	//-9:查询所有合约
 	CThostFtdcQryInstrumentField req;
 	memset(&req, 0, sizeof(req));
 	this->tdApi->ReqQryInstrument(&req, ++requestId);//-9	
@@ -106,14 +105,14 @@ void MyTdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 void MyTdSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 
-	//-9：接收合约
-		md_Instrument_all = md_Instrument_all + pInstrument->InstrumentID + ",";
-		if (bIsLast)
-		{
-			md_Instrument_all = md_Instrument_all.substr(0, md_Instrument_all.length() - 1);
-			cout << md_Instrument_all << endl;
-			this->mdApi->Init();
-		}
+	//-10：接收合约
+	md_Instrument_all = md_Instrument_all + pInstrument->InstrumentID + ",";
+	if (bIsLast)
+	{
+		md_Instrument_all = md_Instrument_all.substr(0, md_Instrument_all.length() - 1);
+		//cout << md_Instrument_all << endl;
+		this->mdApi->Init();
+	}
 }
 
 void MyTdSpi::OnFrontDisconnected(int nReason)
